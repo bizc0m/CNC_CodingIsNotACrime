@@ -1,17 +1,20 @@
 # CNC_CodingIsNotACrime
 
-Mini editeur demoscene HTML tres simple, pense pour etre amusant a utiliser, meme par un enfant.
+Editeur demoscene HTML simple avec gestion des calques, des versions numerotees et des exports.
 
-## Ce que fait l'editeur
+## Fonctions principales
 
-- Editeur en HTML/CSS/JavaScript pur
-- Apercu live sur `canvas`
-- Gestion de l'ordre des calques
+- Gestion de la hierarchie des calques
 - Reglage de la transparence de chaque calque
-- Choix du type de calque
-- Choix de la fonction de melange du calque
-- Ajout de ressources externes via URL
-- Citation visible des ressources externes
+- Edition du type, de l'effet et des parametres de chaque calque
+- Export direct de la demo en HTML autonome
+- Export du code de la demo en JSON
+- Affichage du code source de la page exportee pour modification
+- Historique local des versions dans le navigateur
+- Version numerotee automatiquement
+- Attribution automatique d'un nom de demo connue
+- Lien Demozoo pour chaque version
+- References visibles vers les sources d'inspiration
 
 ## Types de calques
 
@@ -22,17 +25,18 @@ Mini editeur demoscene HTML tres simple, pense pour etre amusant a utiliser, mem
 - Scroller
 - Image externe par URL
 
-## Sources d'inspiration citees dans l'interface
+## Sources d'inspiration
 
 - [CODEF](https://codef.santo.fr/)
 - [Namwollem / Mellow Man - CODEF basics](https://namwollem.blogspot.com/p/codef-basics.html)
 - [Democyclopedie - Liste des effets](https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/)
 - [Democyclopedie - Differents types de demos](https://democyclopedie.wordpress.com/2017/04/03/differents-types-de-demos/)
 
-## Ouvrir le projet
+## Liens ajoutes en bas de page
 
-Ouvre simplement `index.html` dans un navigateur.
+- [demoparty.net](https://www.demoparty.net/)
+- [Article du Ministere de la Culture sur la demoscene](https://www.culture.gouv.fr/thematiques/patrimoine-culturel-immateriel/vivre-le-patrimoine-culturel-immateriel/reportages/la-demoscene-une-culture-libre-a-la-croisee-des-arts-et-de-la-technique)
 
-## Note
+## Limite actuelle
 
-Les liens Perplexity fournis dans le brief ont servi de direction editoriale, mais le projet s'appuie ici sur les sources publiques accessibles directement et citees dans l'interface.
+L'application sait sauvegarder les versions en local dans le navigateur et exporter les fichiers. En revanche, l'upload automatique vers GitHub ne peut pas etre garanti tant qu'une authentification GitHub valide n'est pas configuree sur la machine ou dans un workflow dedie.

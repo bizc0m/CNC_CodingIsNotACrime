@@ -6,16 +6,17 @@
   <title>CNC Coding Is Not A Crime</title>
   <style>
     :root {
-      --bg-1: #08101e;
-      --bg-2: #04070f;
+      --bg-1: #09101e;
+      --bg-2: #03070f;
       --panel: rgba(11, 17, 33, 0.92);
-      --panel-2: rgba(17, 27, 49, 0.96);
-      --line: rgba(147, 197, 255, 0.18);
+      --panel-2: rgba(18, 28, 51, 0.96);
+      --line: rgba(150, 199, 255, 0.18);
       --text: #eef5ff;
-      --muted: #9eb1d9;
-      --accent: #52d9ff;
-      --accent-2: #ffd95f;
-      --ok: #6effae;
+      --muted: #9db0d8;
+      --accent: #58dcff;
+      --accent-2: #ffd760;
+      --ok: #70ffb0;
+      --warn: #ffc15e;
       --shadow: 0 22px 58px rgba(0, 0, 0, 0.34);
       --radius: 22px;
     }
@@ -30,29 +31,42 @@
       font-family: "Trebuchet MS", Verdana, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 12% 14%, rgba(85, 217, 255, 0.2), transparent 24%),
-        radial-gradient(circle at 88% 8%, rgba(255, 217, 95, 0.16), transparent 18%),
+        radial-gradient(circle at 10% 14%, rgba(88, 220, 255, 0.2), transparent 24%),
+        radial-gradient(circle at 88% 8%, rgba(255, 215, 96, 0.14), transparent 16%),
         linear-gradient(180deg, var(--bg-1), var(--bg-2));
     }
 
     .app {
-      width: min(1400px, calc(100% - 20px));
+      width: min(1450px, calc(100% - 20px));
       margin: 10px auto 24px;
       display: grid;
-      grid-template-columns: 380px minmax(0, 1fr) 340px;
+      grid-template-columns: 390px minmax(0, 1fr) 360px;
       gap: 16px;
       align-items: start;
     }
 
-    .panel {
+    .panel,
+    .stage,
+    .footer-note {
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
+    }
+
+    .panel,
+    .stage {
       padding: 18px;
       display: grid;
       gap: 14px;
+    }
+
+    .footer-note {
+      grid-column: 1 / -1;
+      padding: 16px 18px;
+      display: grid;
+      gap: 12px;
     }
 
     h1,
@@ -66,7 +80,7 @@
       padding: 18px;
       border-radius: 18px;
       background:
-        linear-gradient(135deg, rgba(82, 217, 255, 0.14), rgba(255, 217, 95, 0.14)),
+        linear-gradient(135deg, rgba(88, 220, 255, 0.14), rgba(255, 215, 96, 0.14)),
         rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.08);
       display: grid;
@@ -96,16 +110,18 @@
       color: #deebff;
     }
 
-    .grid-2 {
+    .grid-2,
+    .grid-3 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
     .grid-3 {
-      display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
     }
 
     button,
@@ -119,8 +135,8 @@
     }
 
     button {
-      min-height: 52px;
-      padding: 12px 14px;
+      min-height: 48px;
+      padding: 11px 14px;
       cursor: pointer;
       font-weight: 700;
       background: linear-gradient(180deg, rgba(116, 166, 255, 0.26), rgba(50, 83, 160, 0.18));
@@ -134,12 +150,18 @@
     }
 
     button.primary {
-      background: linear-gradient(180deg, rgba(110, 255, 174, 0.3), rgba(34, 124, 72, 0.22));
-      border-color: rgba(110, 255, 174, 0.44);
+      background: linear-gradient(180deg, rgba(112, 255, 176, 0.3), rgba(34, 124, 72, 0.22));
+      border-color: rgba(112, 255, 176, 0.44);
     }
 
     button.warning {
-      background: linear-gradient(180deg, rgba(255, 217, 95, 0.24), rgba(168, 113, 24, 0.18));
+      background: linear-gradient(180deg, rgba(255, 193, 94, 0.28), rgba(163, 103, 21, 0.18));
+    }
+
+    button.small {
+      min-height: 38px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
     }
 
     label {
@@ -158,7 +180,7 @@
     }
 
     textarea {
-      min-height: 86px;
+      min-height: 90px;
       resize: vertical;
     }
 
@@ -182,12 +204,6 @@
     }
 
     .stage {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      display: grid;
       gap: 12px;
     }
 
@@ -230,12 +246,14 @@
     }
 
     .layers-list,
+    .versions-list,
     .resources-list {
       display: grid;
       gap: 10px;
     }
 
     .layer-card,
+    .version-card,
     .resource-card {
       padding: 12px;
       border-radius: 16px;
@@ -246,21 +264,16 @@
     }
 
     .layer-card.active {
-      border-color: rgba(82, 217, 255, 0.55);
-      box-shadow: 0 0 0 1px rgba(82, 217, 255, 0.2) inset;
+      border-color: rgba(88, 220, 255, 0.55);
+      box-shadow: 0 0 0 1px rgba(88, 220, 255, 0.22) inset;
     }
 
-    .layer-head,
-    .resource-head {
+    .row-between {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
       align-items: center;
-    }
-
-    .layer-meta {
-      display: grid;
-      gap: 4px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .mini-actions {
@@ -269,35 +282,24 @@
       gap: 8px;
     }
 
-    .mini-actions button,
-    .tiny-button {
-      min-height: 40px;
+    .source-box {
+      min-height: 240px;
+      font-family: "Courier New", monospace;
       font-size: 0.9rem;
-      padding: 8px 10px;
-    }
-
-    .footer-note {
-      grid-column: 1 / -1;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-      display: grid;
-      gap: 10px;
+      line-height: 1.4;
     }
 
     a {
       color: #9ee7ff;
     }
 
-    @media (max-width: 1180px) {
+    @media (max-width: 1220px) {
       .app {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 720px) {
       .grid-2,
       .grid-3,
       .mini-actions {
@@ -305,7 +307,7 @@
       }
 
       .hero h1 {
-        font-size: 1.46rem;
+        font-size: 1.48rem;
       }
     }
   </style>
@@ -315,7 +317,24 @@
     <aside class="panel">
       <div class="hero">
         <h1>CNC Coding Is Not A Crime</h1>
-        <p>Un editeur demoscene HTML tres simple, avec des calques comme des briques de scene. Tu peux changer leur ordre, leur transparence, leur type et leur fonction.</p>
+        <p>Un editeur demoscene HTML tres simple avec gestion des calques, transparence, hierarchie, versions numerotees, export HTML et JSON, et acces au code source.</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Versions</div>
+        <div class="grid-2">
+          <button id="saveVersionButton" class="primary">Sauver version</button>
+          <button id="exportVersionJsonButton">JSON version</button>
+        </div>
+        <div class="row-between">
+          <span class="pill" id="currentVersionPill">Version: V001</span>
+          <span class="pill" id="demoNamePill">Demo: The Union Demo</span>
+        </div>
+        <div class="version-card">
+          <strong id="demoTitleLine">V001 - The Union Demo</strong>
+          <a id="demoLinkLine" href="https://demozoo.org/" target="_blank" rel="noreferrer">Voir sur Demozoo</a>
+          <span class="muted" id="demoSubtitleLine">Nom automatique de demo connue pour cette version.</span>
+        </div>
       </div>
 
       <div class="section">
@@ -358,8 +377,12 @@
         </label>
         <div class="grid-3">
           <button id="playPauseButton">Pause</button>
-          <button id="saveButton">Image PNG</button>
+          <button id="savePngButton">Image PNG</button>
           <button id="resetButton" class="warning">Reset</button>
+        </div>
+        <div class="grid-2">
+          <button id="exportHtmlButton" class="primary">Export HTML</button>
+          <button id="refreshSourceButton">Voir le code</button>
         </div>
       </div>
 
@@ -378,8 +401,8 @@
             <option value="image">Image URL</option>
           </select>
         </label>
-        <label for="layerFunction">Fonction
-          <select id="layerFunction">
+        <label for="layerBlend">Effet du calque
+          <select id="layerBlend">
             <option value="normal">Normal</option>
             <option value="screen">Lumiere</option>
             <option value="lighter">Flash</option>
@@ -393,23 +416,23 @@
             <span class="pill" id="layerOpacityValue">100%</span>
           </div>
         </label>
-        <label for="layerSpeed">Vitesse du calque
+        <label for="layerSpeed">Vitesse
           <div class="range-line">
             <input id="layerSpeed" type="range" min="1" max="10" value="5">
             <span class="pill" id="layerSpeedValue">5</span>
           </div>
         </label>
-        <label for="layerScale">Taille du calque
+        <label for="layerScale">Taille
           <div class="range-line">
             <input id="layerScale" type="range" min="1" max="10" value="5">
             <span class="pill" id="layerScaleValue">5</span>
           </div>
         </label>
-        <label for="layerText">Texte / note / URL
+        <label for="layerText">Texte / note / URL ressource
           <textarea id="layerText"></textarea>
         </label>
         <label for="layerSourceLabel">Source a citer
-          <input id="layerSourceLabel" type="text" placeholder="Ex: CODEF, blog, image perso...">
+          <input id="layerSourceLabel" type="text" placeholder="Ex: CODEF, image perso, archive demoscene">
         </label>
         <label for="layerSourceUrl">Lien source
           <input id="layerSourceUrl" type="url" placeholder="https://...">
@@ -419,7 +442,6 @@
           <button id="moveDownButton">Descendre</button>
           <button id="deleteLayerButton" class="warning">Supprimer</button>
         </div>
-        <p class="tiny">Astuce: un calque en haut de la liste passe devant les autres. Sa transparence te permet de melanger les effets.</p>
       </div>
     </aside>
 
@@ -427,7 +449,7 @@
       <div class="stage-top">
         <div>
           <h2>Apercu en direct</h2>
-          <p class="muted">Empile tes calques pour construire une mini demo. Simple comme des briques.</p>
+          <p class="muted">Tu peux empiler les calques, changer leur transparence et leur effet, puis exporter la demo.</p>
         </div>
         <div class="grid-2">
           <span class="pill" id="statusPill">Animation: ON</span>
@@ -438,7 +460,7 @@
       <div class="canvas-shell">
         <canvas id="demoCanvas" width="960" height="600"></canvas>
         <div class="canvas-caption">
-          <span>CNC Coding Is Not A Crime</span>
+          <span id="canvasVersionCaption">V001 - The Union Demo</span>
           <span>HTML Canvas demo editor</span>
         </div>
       </div>
@@ -447,13 +469,27 @@
         <div class="section-title">Ordre des calques</div>
         <div id="layersList" class="layers-list"></div>
       </div>
+
+      <div class="section">
+        <div class="row-between">
+          <div class="section-title">Code source modifiable</div>
+          <button id="copySourceButton" class="small">Copier le code</button>
+        </div>
+        <textarea id="sourceView" class="source-box" spellcheck="false"></textarea>
+      </div>
     </section>
 
     <aside class="panel">
       <div class="section">
-        <div class="section-title">Ressources externes</div>
-        <p class="muted">Tu peux coller une URL d'image dans un calque <strong>Image URL</strong>. Si tu donnes aussi la source et le lien, l'editeur l'affiche ici pour garder la citation.</p>
+        <div class="section-title">Ressources externes citees</div>
+        <p class="muted">Les ressources utilisees par la scene sont listees ici. Elles sont aussi reprises dans l'export HTML et dans le code source genere.</p>
         <div id="resourcesList" class="resources-list"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Historique local</div>
+        <p class="muted">Les versions sauvees sont gardees dans le navigateur avec numero, nom de demo, date, JSON et HTML.</p>
+        <div id="versionsList" class="versions-list"></div>
       </div>
 
       <div class="section">
@@ -463,19 +499,16 @@
           <p><a href="https://namwollem.blogspot.com/p/codef-basics.html" target="_blank" rel="noreferrer">Namwollem / Mellow Man</a>: approche pas-a-pas pour debuter avec starfield, scrolltext et effets de scene.</p>
           <p><a href="https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/" target="_blank" rel="noreferrer">Democyclopedie - Liste des effets</a>: plasma, rasters, menu, scrollers.</p>
           <p><a href="https://democyclopedie.wordpress.com/2017/04/03/differents-types-de-demos/" target="_blank" rel="noreferrer">Democyclopedie - Types de demos</a>: culture et structure demoscene.</p>
-          <p>Liens Perplexity fournis par l'utilisateur: gardes comme brief editorial, mais non exploitables directement ici depuis mon environnement.</p>
+          <p>Les liens Perplexity fournis dans le brief sont conserves comme pistes editoriales, mais les references actives de cette page viennent des sources publiques accessibles directement.</p>
         </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Comment jouer</div>
-        <p class="muted">1. Ajoute un calque. 2. Clique dessus. 3. Change sa transparence ou sa fonction. 4. Monte ou descends-le dans la pile. 5. Teste des images externes avec citation.</p>
       </div>
     </aside>
 
     <section class="footer-note">
-      <h3>Pourquoi cette version</h3>
-      <p class="muted">Cette V2 garde un style jouet tres simple pour enfant, mais avec un vrai systeme de composition: ordre des calques, opacite, type, fonction de melange et credits de ressources externes.</p>
+      <h3>Culture demoscene</h3>
+      <p class="muted">Chaque version prend automatiquement le nom d'une demo connue et propose un lien Demozoo. La page ajoute aussi des liens culturels et evenementiels en bas.</p>
+      <p><a href="https://www.demoparty.net/" target="_blank" rel="noreferrer">https://www.demoparty.net/</a></p>
+      <p><a href="https://www.culture.gouv.fr/thematiques/patrimoine-culturel-immateriel/vivre-le-patrimoine-culturel-immateriel/reportages/la-demoscene-une-culture-libre-a-la-croisee-des-arts-et-de-la-technique" target="_blank" rel="noreferrer">https://www.culture.gouv.fr/thematiques/patrimoine-culturel-immateriel/vivre-le-patrimoine-culturel-immateriel/reportages/la-demoscene-une-culture-libre-a-la-croisee-des-arts-et-de-la-technique</a></p>
     </section>
   </main>
 
@@ -483,20 +516,35 @@
     const canvas = document.getElementById("demoCanvas");
     const ctx = canvas.getContext("2d");
 
+    const storageKey = "cnc_demoscene_versions";
+    const sourceView = document.getElementById("sourceView");
+    const layersList = document.getElementById("layersList");
+    const resourcesList = document.getElementById("resourcesList");
+    const versionsList = document.getElementById("versionsList");
+    const statusPill = document.getElementById("statusPill");
+    const layerCountPill = document.getElementById("layerCountPill");
+    const currentVersionPill = document.getElementById("currentVersionPill");
+    const demoNamePill = document.getElementById("demoNamePill");
+    const demoTitleLine = document.getElementById("demoTitleLine");
+    const demoLinkLine = document.getElementById("demoLinkLine");
+    const demoSubtitleLine = document.getElementById("demoSubtitleLine");
+    const canvasVersionCaption = document.getElementById("canvasVersionCaption");
+
     const globalPalette = document.getElementById("globalPalette");
     const globalSpeed = document.getElementById("globalSpeed");
     const globalSpeedValue = document.getElementById("globalSpeedValue");
     const playPauseButton = document.getElementById("playPauseButton");
-    const saveButton = document.getElementById("saveButton");
+    const savePngButton = document.getElementById("savePngButton");
     const resetButton = document.getElementById("resetButton");
-    const statusPill = document.getElementById("statusPill");
-    const layerCountPill = document.getElementById("layerCountPill");
-    const layersList = document.getElementById("layersList");
-    const resourcesList = document.getElementById("resourcesList");
+    const exportHtmlButton = document.getElementById("exportHtmlButton");
+    const exportVersionJsonButton = document.getElementById("exportVersionJsonButton");
+    const saveVersionButton = document.getElementById("saveVersionButton");
+    const refreshSourceButton = document.getElementById("refreshSourceButton");
+    const copySourceButton = document.getElementById("copySourceButton");
 
     const layerName = document.getElementById("layerName");
     const layerType = document.getElementById("layerType");
-    const layerFunction = document.getElementById("layerFunction");
+    const layerBlend = document.getElementById("layerBlend");
     const layerOpacity = document.getElementById("layerOpacity");
     const layerOpacityValue = document.getElementById("layerOpacityValue");
     const layerSpeed = document.getElementById("layerSpeed");
@@ -517,6 +565,17 @@
       candy: ["#180733", "#7030ff", "#ff54aa", "#ffd166", "#fff5e3"]
     };
 
+    const famousDemos = [
+      { name: "The Union Demo", url: "https://demozoo.org/productions/114/" },
+      { name: "Second Reality", url: "https://demozoo.org/productions/88/" },
+      { name: "Desert Dream", url: "https://demozoo.org/productions/229/" },
+      { name: "State of the Art", url: "https://demozoo.org/productions/245/" },
+      { name: "Hardwired", url: "https://demozoo.org/productions/117/" },
+      { name: "Enigma", url: "https://demozoo.org/productions/368/" },
+      { name: "Mental Hangover", url: "https://demozoo.org/productions/365/" },
+      { name: "Global Trash", url: "https://demozoo.org/productions/234/" }
+    ];
+
     const state = {
       palette: "ocean",
       globalSpeed: 5,
@@ -524,11 +583,22 @@
       selectedLayerId: null,
       frame: 0,
       layers: [],
-      imageCache: new Map()
+      imageCache: new Map(),
+      versionNumber: 1,
+      currentDemo: famousDemos[0],
+      versions: []
     };
 
     function uid() {
       return Math.random().toString(36).slice(2, 10);
+    }
+
+    function padVersion(number) {
+      return "V" + String(number).padStart(3, "0");
+    }
+
+    function deepClone(data) {
+      return JSON.parse(JSON.stringify(data));
     }
 
     function createStars(seedCount = 120) {
@@ -537,6 +607,21 @@
         y: Math.random() * canvas.height,
         z: 0.2 + Math.random() * 1.4,
         size: 0.5 + Math.random() * 2.1
+      }));
+    }
+
+    function normalizedLayersForSave(layers) {
+      return layers.map((layer) => ({
+        id: layer.id,
+        name: layer.name,
+        type: layer.type,
+        blend: layer.blend,
+        opacity: layer.opacity,
+        speed: layer.speed,
+        scale: layer.scale,
+        text: layer.text || "",
+        sourceLabel: layer.sourceLabel || "",
+        sourceUrl: layer.sourceUrl || ""
       }));
     }
 
@@ -550,8 +635,8 @@
           speed: 5,
           scale: 5,
           text: "",
-          sourceLabel: "",
-          sourceUrl: "",
+          sourceLabel: "CODEF",
+          sourceUrl: "https://codef.santo.fr/",
           stars: createStars(130)
         },
         plasma: {
@@ -614,9 +699,14 @@
 
       return {
         id: uid(),
-        ...structuredClone(defaults[type] || defaults.text),
+        ...deepClone(defaults[type] || defaults.text),
         ...overrides
       };
+    }
+
+    function setVersionIdentity(number) {
+      state.versionNumber = number;
+      state.currentDemo = famousDemos[(number - 1) % famousDemos.length];
     }
 
     function starterScene() {
@@ -663,185 +753,11 @@
       else if (name === "plasma") scenePlasma();
       else if (name === "mix") sceneMix();
       else starterScene();
-      renderEditor();
+      updateAll();
     }
 
-    function getSelectedLayer() {
-      return state.layers.find((layer) => layer.id === state.selectedLayerId) || null;
-    }
-
-    function renderLayersList() {
-      layersList.innerHTML = "";
-
-      state.layers.forEach((layer, index) => {
-        const card = document.createElement("div");
-        card.className = "layer-card" + (layer.id === state.selectedLayerId ? " active" : "");
-
-        const head = document.createElement("div");
-        head.className = "layer-head";
-
-        const meta = document.createElement("div");
-        meta.className = "layer-meta";
-        meta.innerHTML = `
-          <strong>${layer.name}</strong>
-          <span class="muted">${labelForType(layer.type)} | ${labelForBlend(layer.blend)} | ${layer.opacity}%</span>
-          <span class="tiny">Position ${index + 1} / ${state.layers.length}</span>
-        `;
-
-        const pick = document.createElement("button");
-        pick.className = "tiny-button";
-        pick.textContent = "Choisir";
-        pick.addEventListener("click", () => {
-          state.selectedLayerId = layer.id;
-          renderEditor();
-        });
-
-        head.append(meta, pick);
-
-        const actions = document.createElement("div");
-        actions.className = "mini-actions";
-
-        const up = document.createElement("button");
-        up.textContent = "Monter";
-        up.disabled = index === 0;
-        up.addEventListener("click", () => moveLayer(index, -1));
-
-        const down = document.createElement("button");
-        down.textContent = "Descendre";
-        down.disabled = index === state.layers.length - 1;
-        down.addEventListener("click", () => moveLayer(index, 1));
-
-        const duplicate = document.createElement("button");
-        duplicate.textContent = "Dupliquer";
-        duplicate.addEventListener("click", () => duplicateLayer(index));
-
-        actions.append(up, down, duplicate);
-        card.append(head, actions);
-        layersList.append(card);
-      });
-
-      layerCountPill.textContent = "Calques: " + state.layers.length;
-    }
-
-    function renderResourcesList() {
-      resourcesList.innerHTML = "";
-      const creditedLayers = state.layers.filter((layer) => layer.sourceLabel || layer.sourceUrl);
-
-      if (!creditedLayers.length) {
-        const empty = document.createElement("div");
-        empty.className = "resource-card";
-        empty.innerHTML = "<strong>Aucune ressource externe citee</strong><p class='muted'>Ajoute un calque image ou remplis les champs de source.</p>";
-        resourcesList.append(empty);
-        return;
-      }
-
-      creditedLayers.forEach((layer) => {
-        const card = document.createElement("div");
-        card.className = "resource-card";
-        card.innerHTML = `
-          <div class="resource-head">
-            <strong>${layer.name}</strong>
-            <span class="pill">${labelForType(layer.type)}</span>
-          </div>
-          <div class="muted">${layer.sourceLabel || "Source indiquee"}</div>
-          ${layer.sourceUrl ? `<a href="${layer.sourceUrl}" target="_blank" rel="noreferrer">${layer.sourceUrl}</a>` : ""}
-        `;
-        resourcesList.append(card);
-      });
-    }
-
-    function renderInspector() {
-      const layer = getSelectedLayer();
-      const disabled = !layer;
-
-      [
-        layerName,
-        layerType,
-        layerFunction,
-        layerOpacity,
-        layerSpeed,
-        layerScale,
-        layerText,
-        layerSourceLabel,
-        layerSourceUrl,
-        moveUpButton,
-        moveDownButton,
-        deleteLayerButton
-      ].forEach((element) => {
-        element.disabled = disabled;
-      });
-
-      if (!layer) {
-        layerName.value = "";
-        layerText.value = "";
-        layerSourceLabel.value = "";
-        layerSourceUrl.value = "";
-        return;
-      }
-
-      layerName.value = layer.name;
-      layerType.value = layer.type;
-      layerFunction.value = layer.blend;
-      layerOpacity.value = layer.opacity;
-      layerSpeed.value = layer.speed;
-      layerScale.value = layer.scale;
-      layerText.value = layer.text || "";
-      layerSourceLabel.value = layer.sourceLabel || "";
-      layerSourceUrl.value = layer.sourceUrl || "";
-      layerOpacityValue.textContent = layer.opacity + "%";
-      layerSpeedValue.textContent = String(layer.speed);
-      layerScaleValue.textContent = String(layer.scale);
-
-      const index = state.layers.findIndex((item) => item.id === layer.id);
-      moveUpButton.disabled = index <= 0;
-      moveDownButton.disabled = index === -1 || index >= state.layers.length - 1;
-    }
-
-    function renderEditor() {
-      globalPalette.value = state.palette;
-      globalSpeed.value = state.globalSpeed;
-      globalSpeedValue.textContent = String(state.globalSpeed);
-      playPauseButton.textContent = state.playing ? "Pause" : "Lecture";
-      statusPill.textContent = "Animation: " + (state.playing ? "ON" : "OFF");
-      renderLayersList();
-      renderResourcesList();
-      renderInspector();
-    }
-
-    function moveLayer(index, direction) {
-      const next = index + direction;
-      if (next < 0 || next >= state.layers.length) return;
-      const tmp = state.layers[index];
-      state.layers[index] = state.layers[next];
-      state.layers[next] = tmp;
-      renderEditor();
-    }
-
-    function duplicateLayer(index) {
-      const original = state.layers[index];
-      const copy = makeLayer(original.type, structuredClone(original));
-      copy.id = uid();
-      copy.name = original.name + " copie";
-      if (copy.type === "stars") copy.stars = createStars(130);
-      if (copy.type === "scroll") copy.offsetX = canvas.width;
-      state.layers.splice(index + 1, 0, copy);
-      state.selectedLayerId = copy.id;
-      renderEditor();
-    }
-
-    function deleteSelectedLayer() {
-      const index = state.layers.findIndex((layer) => layer.id === state.selectedLayerId);
-      if (index === -1) return;
-      state.layers.splice(index, 1);
-      state.selectedLayerId = state.layers[Math.max(0, index - 1)]?.id || null;
-      renderEditor();
-    }
-
-    function addLayer(type) {
-      const layer = makeLayer(type);
-      state.layers.unshift(layer);
-      state.selectedLayerId = layer.id;
-      renderEditor();
+    function safeOpacity(value) {
+      return Math.max(0, Math.min(1, value / 100));
     }
 
     function labelForType(type) {
@@ -865,19 +781,410 @@
       }[blend] || blend;
     }
 
-    function safeOpacity(value) {
-      return Math.max(0, Math.min(1, value / 100));
+    function getSelectedLayer() {
+      return state.layers.find((layer) => layer.id === state.selectedLayerId) || null;
     }
 
     function ensureImage(url) {
       if (!url) return null;
       if (state.imageCache.has(url)) return state.imageCache.get(url);
-
       const image = new Image();
       image.crossOrigin = "anonymous";
       image.src = url;
       state.imageCache.set(url, image);
       return image;
+    }
+
+    function getVersionPayload() {
+      return {
+        versionNumber: state.versionNumber,
+        versionLabel: padVersion(state.versionNumber),
+        demoName: state.currentDemo.name,
+        demoUrl: state.currentDemo.url,
+        savedAt: new Date().toISOString(),
+        palette: state.palette,
+        globalSpeed: state.globalSpeed,
+        layers: normalizedLayersForSave(state.layers),
+        inspirations: [
+          "https://codef.santo.fr/",
+          "https://namwollem.blogspot.com/p/codef-basics.html",
+          "https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/",
+          "https://democyclopedie.wordpress.com/2017/04/03/differents-types-de-demos/"
+        ],
+        footerLinks: [
+          "https://www.demoparty.net/",
+          "https://www.culture.gouv.fr/thematiques/patrimoine-culturel-immateriel/vivre-le-patrimoine-culturel-immateriel/reportages/la-demoscene-une-culture-libre-a-la-croisee-des-arts-et-de-la-technique"
+        ]
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function getSourceCreditsBlock() {
+      const credits = [];
+      normalizedLayersForSave(state.layers).forEach((layer) => {
+        if (layer.sourceLabel || layer.sourceUrl) {
+          credits.push(`- ${layer.name}: ${layer.sourceLabel || "Source"}${layer.sourceUrl ? " -> " + layer.sourceUrl : ""}`);
+        }
+      });
+      return credits.join("\n");
+    }
+
+    function buildExportHtml(payload) {
+      const payloadJson = JSON.stringify(payload, null, 2);
+      return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(payload.versionLabel)} - ${escapeHtml(payload.demoName)}</title>
+  <!-- Sources d'inspiration:
+  https://codef.santo.fr/
+  https://namwollem.blogspot.com/p/codef-basics.html
+  https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/
+  https://democyclopedie.wordpress.com/2017/04/03/differents-types-de-demos/
+  -->
+  <!-- Ressources utilisees:
+${getSourceCreditsBlock()}
+  -->
+  <style>
+    body{margin:0;background:#050913;color:#eef5ff;font-family:Trebuchet MS,Verdana,sans-serif;}
+    .wrap{width:min(1100px,calc(100% - 20px));margin:16px auto;display:grid;gap:16px;}
+    .card{background:rgba(11,17,33,.92);border:1px solid rgba(150,199,255,.18);border-radius:20px;padding:16px;}
+    .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+    canvas{display:block;width:100%;height:auto;background:#000;border-radius:16px;image-rendering:pixelated;}
+    a{color:#9ee7ff;}
+    .muted{color:#9db0d8;}
+    ul{margin:8px 0 0 18px;}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <div>
+          <h1>${escapeHtml(payload.versionLabel)} - ${escapeHtml(payload.demoName)}</h1>
+          <p class="muted">Export HTML direct depuis CNC Coding Is Not A Crime</p>
+        </div>
+        <div>
+          <a href="${payload.demoUrl}" target="_blank" rel="noreferrer">Lien Demozoo</a>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <canvas id="demoCanvas" width="960" height="600"></canvas>
+    </section>
+    <section class="card">
+      <h2>Ressources et inspirations</h2>
+      <ul>
+        <li><a href="https://codef.santo.fr/" target="_blank" rel="noreferrer">CODEF</a></li>
+        <li><a href="https://namwollem.blogspot.com/p/codef-basics.html" target="_blank" rel="noreferrer">Namwollem / Mellow Man</a></li>
+        <li><a href="https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/" target="_blank" rel="noreferrer">Democyclopedie - Liste des effets</a></li>
+        <li><a href="https://democyclopedie.wordpress.com/2017/04/03/differents-types-de-demos/" target="_blank" rel="noreferrer">Democyclopedie - Types de demos</a></li>
+      </ul>
+    </section>
+    <section class="card">
+      <p><a href="https://www.demoparty.net/" target="_blank" rel="noreferrer">demoparty.net</a></p>
+      <p><a href="https://www.culture.gouv.fr/thematiques/patrimoine-culturel-immateriel/vivre-le-patrimoine-culturel-immateriel/reportages/la-demoscene-une-culture-libre-a-la-croisee-des-arts-et-de-la-technique" target="_blank" rel="noreferrer">Article du Ministere de la Culture</a></p>
+    </section>
+  </main>
+  <script>
+    const payload = ${payloadJson};
+    const canvas = document.getElementById("demoCanvas");
+    const ctx = canvas.getContext("2d");
+    const palettes = {
+      ocean: ["#03111b", "#0d2f67", "#1ec6ff", "#dff8ff", "#7effcb"],
+      sunset: ["#17061e", "#631150", "#ff666d", "#ffc95c", "#fff2bf"],
+      mint: ["#03150f", "#0c615a", "#4dffcf", "#d7fff4", "#8ddcff"],
+      candy: ["#180733", "#7030ff", "#ff54aa", "#ffd166", "#fff5e3"]
+    };
+    const colors = palettes[payload.palette] || palettes.ocean;
+    const state = {frame:0, imageCache:new Map()};
+    payload.layers.forEach((layer)=>{ if(layer.type==="scroll") layer.offsetX = canvas.width; if(layer.type==="stars"){ layer.stars = Array.from({length:130},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,z:0.2+Math.random()*1.4,size:0.5+Math.random()*2.1})); } });
+    function safeOpacity(value){ return Math.max(0, Math.min(1, value / 100)); }
+    function ensureImage(url){ if(!url) return null; if(state.imageCache.has(url)) return state.imageCache.get(url); const image = new Image(); image.crossOrigin = "anonymous"; image.src = url; state.imageCache.set(url,image); return image; }
+    function background(){ const g=ctx.createLinearGradient(0,0,0,canvas.height); g.addColorStop(0,colors[0]); g.addColorStop(.55,colors[1]); g.addColorStop(1,"#000"); ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height); }
+    function stars(layer){ for(const star of layer.stars){ star.x -= star.z * (0.7 + payload.globalSpeed * (layer.speed / 5) * 0.8); if(star.x < -12){ star.x = canvas.width + Math.random() * 90; star.y = Math.random() * canvas.height; } ctx.fillStyle = colors[3]; ctx.globalAlpha = safeOpacity(layer.opacity) * Math.min(1, 0.35 + star.z * 0.55); ctx.fillRect(star.x, star.y, star.size + layer.scale * 0.08, star.size + layer.scale * 0.08); } ctx.globalAlpha = 1; }
+    function plasma(layer){ const cell = Math.max(8, 28 - layer.scale * 2); const speed = payload.globalSpeed * (layer.speed / 5); for(let y=0;y<canvas.height;y+=cell){ for(let x=0;x<canvas.width;x+=cell){ const v = Math.sin((x + state.frame * speed * 2.1) * .018) + Math.sin((y - state.frame * speed * 1.6) * .024) + Math.sin((x + y + state.frame * speed) * .016); if(v < -.7) ctx.fillStyle = colors[0]; else if(v < .05) ctx.fillStyle = colors[1]; else if(v < .85) ctx.fillStyle = colors[2]; else ctx.fillStyle = colors[4]; ctx.globalAlpha = safeOpacity(layer.opacity) * (.18 + ((v + 3) / 6) * .52); ctx.fillRect(x,y,cell+1,cell+1);} } ctx.globalAlpha = 1; }
+    function rasters(layer){ const speed = payload.globalSpeed * (layer.speed / 5); const height = 20 + layer.scale * 2; for(let y=0;y<canvas.height;y+=height){ const wave = Math.sin((y * .03) + state.frame * .03 * speed); ctx.fillStyle = wave > 0 ? colors[2] : colors[4]; ctx.globalAlpha = safeOpacity(layer.opacity) * (.25 + ((wave + 1) * .14)); ctx.fillRect(0, y + Math.sin(state.frame * .04 + y * .03) * 9, canvas.width, height - 3); } ctx.globalAlpha = 1; }
+    function text(layer){ const speed = payload.globalSpeed * (layer.speed / 5); const wave = Math.sin(state.frame * .05 * speed) * (6 + layer.scale * 1.6); ctx.save(); ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.globalAlpha=safeOpacity(layer.opacity); ctx.font=\`900 \${64 + layer.scale * 6}px Trebuchet MS\`; ctx.fillStyle="rgba(0,0,0,.38)"; ctx.fillText(layer.text || "TEXTE", canvas.width / 2 + 5, canvas.height / 2 + 6 + wave); ctx.fillStyle=colors[4]; ctx.shadowColor=colors[2]; ctx.shadowBlur=24; ctx.fillText(layer.text || "TEXTE", canvas.width / 2, canvas.height / 2 + wave); ctx.restore(); }
+    function scroll(layer){ const speed = payload.globalSpeed * (layer.speed / 5); const textValue = " " + (layer.text || "SCROLLER").trim() + " "; ctx.save(); ctx.globalAlpha=safeOpacity(layer.opacity); ctx.font=\`900 \${24 + layer.scale * 1.8}px Verdana\`; ctx.textBaseline="middle"; const y = canvas.height - 58 + Math.sin(state.frame * .05 * speed) * 8; ctx.fillStyle="rgba(0,0,0,.42)"; ctx.fillRect(0, canvas.height - 96, canvas.width, 74); ctx.fillStyle=colors[2]; ctx.shadowColor=colors[4]; ctx.shadowBlur=20; ctx.fillText(textValue, layer.offsetX, y); const width = ctx.measureText(textValue).width; layer.offsetX -= 2 + speed; if(layer.offsetX < -width - 12) layer.offsetX = canvas.width + 10; ctx.restore(); }
+    function image(layer){ const img = ensureImage((layer.text || "").trim()); if(!img || !img.complete || !img.naturalWidth) return; const scale = .45 + layer.scale * .12; const targetWidth = canvas.width * Math.min(1.2, scale); const ratio = img.naturalHeight / img.naturalWidth; const targetHeight = targetWidth * ratio; const x = (canvas.width - targetWidth) / 2; const y = (canvas.height - targetHeight) / 2; ctx.save(); ctx.globalAlpha=safeOpacity(layer.opacity); ctx.drawImage(img, x, y, targetWidth, targetHeight); ctx.restore(); }
+    function frameChrome(){ ctx.save(); ctx.strokeStyle="rgba(255,255,255,.12)"; ctx.lineWidth=3; ctx.strokeRect(10,10,canvas.width-20,canvas.height-20); ctx.restore(); }
+    function render(){ background(); for(let i=payload.layers.length - 1; i>=0; i--){ const layer = payload.layers[i]; ctx.save(); ctx.globalCompositeOperation = layer.blend; if(layer.type==="stars") stars(layer); if(layer.type==="plasma") plasma(layer); if(layer.type==="rasters") rasters(layer); if(layer.type==="text") text(layer); if(layer.type==="scroll") scroll(layer); if(layer.type==="image") image(layer); ctx.restore(); } frameChrome(); }
+    function tick(){ state.frame += 1; render(); requestAnimationFrame(tick); }
+    tick();
+  </script>
+</body>
+</html>`;
+    }
+
+    function updateSourceView() {
+      sourceView.value = buildExportHtml(getVersionPayload());
+    }
+
+    function downloadText(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    function persistVersions() {
+      localStorage.setItem(storageKey, JSON.stringify(state.versions));
+    }
+
+    function loadPersistedVersions() {
+      try {
+        state.versions = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      } catch {
+        state.versions = [];
+      }
+    }
+
+    function renderVersionIdentity() {
+      const label = padVersion(state.versionNumber);
+      currentVersionPill.textContent = "Version: " + label;
+      demoNamePill.textContent = "Demo: " + state.currentDemo.name;
+      demoTitleLine.textContent = label + " - " + state.currentDemo.name;
+      demoLinkLine.href = state.currentDemo.url;
+      demoLinkLine.textContent = "Voir " + state.currentDemo.name + " sur Demozoo";
+      demoSubtitleLine.textContent = "Nom automatique de demo connue pour cette version.";
+      canvasVersionCaption.textContent = label + " - " + state.currentDemo.name;
+    }
+
+    function renderResources() {
+      resourcesList.innerHTML = "";
+      const creditedLayers = normalizedLayersForSave(state.layers).filter((layer) => layer.sourceLabel || layer.sourceUrl);
+      if (!creditedLayers.length) {
+        const card = document.createElement("div");
+        card.className = "resource-card";
+        card.innerHTML = "<strong>Aucune ressource citee</strong><p class='muted'>Ajoute une source pour un calque ou une image externe.</p>";
+        resourcesList.append(card);
+        return;
+      }
+      creditedLayers.forEach((layer) => {
+        const card = document.createElement("div");
+        card.className = "resource-card";
+        card.innerHTML = `
+          <div class="row-between">
+            <strong>${layer.name}</strong>
+            <span class="pill">${labelForType(layer.type)}</span>
+          </div>
+          <div class="muted">${layer.sourceLabel || "Source"}</div>
+          ${layer.sourceUrl ? `<a href="${layer.sourceUrl}" target="_blank" rel="noreferrer">${layer.sourceUrl}</a>` : ""}
+        `;
+        resourcesList.append(card);
+      });
+    }
+
+    function renderVersionsList() {
+      versionsList.innerHTML = "";
+      if (!state.versions.length) {
+        const card = document.createElement("div");
+        card.className = "version-card";
+        card.innerHTML = "<strong>Aucune version sauvee</strong><p class='muted'>Clique sur Sauver version pour garder une copie locale numerotee.</p>";
+        versionsList.append(card);
+        return;
+      }
+
+      state.versions
+        .slice()
+        .sort((a, b) => b.versionNumber - a.versionNumber)
+        .forEach((version) => {
+          const card = document.createElement("div");
+          card.className = "version-card";
+
+          const head = document.createElement("div");
+          head.className = "row-between";
+          head.innerHTML = `
+            <strong>${version.versionLabel} - ${version.demoName}</strong>
+            <span class="pill">${version.layers.length} calques</span>
+          `;
+
+          const meta = document.createElement("div");
+          meta.className = "muted";
+          meta.textContent = new Date(version.savedAt).toLocaleString("fr-FR");
+
+          const link = document.createElement("a");
+          link.href = version.demoUrl;
+          link.target = "_blank";
+          link.rel = "noreferrer";
+          link.textContent = "Lien Demozoo";
+
+          const actions = document.createElement("div");
+          actions.className = "mini-actions";
+
+          const loadButton = document.createElement("button");
+          loadButton.className = "small";
+          loadButton.textContent = "Charger";
+          loadButton.addEventListener("click", () => loadVersion(version.versionNumber));
+
+          const jsonButton = document.createElement("button");
+          jsonButton.className = "small";
+          jsonButton.textContent = "JSON";
+          jsonButton.addEventListener("click", () => downloadText(`${version.versionLabel}-${version.demoName}.json`.replaceAll(" ", "_"), JSON.stringify(version, null, 2), "application/json"));
+
+          const htmlButton = document.createElement("button");
+          htmlButton.className = "small";
+          htmlButton.textContent = "HTML";
+          htmlButton.addEventListener("click", () => downloadText(`${version.versionLabel}-${version.demoName}.html`.replaceAll(" ", "_"), version.exportHtml, "text/html"));
+
+          actions.append(loadButton, jsonButton, htmlButton);
+          card.append(head, meta, link, actions);
+          versionsList.append(card);
+        });
+    }
+
+    function renderLayersList() {
+      layersList.innerHTML = "";
+      state.layers.forEach((layer, index) => {
+        const card = document.createElement("div");
+        card.className = "layer-card" + (layer.id === state.selectedLayerId ? " active" : "");
+        card.innerHTML = `
+          <div class="row-between">
+            <div>
+              <strong>${layer.name}</strong>
+              <div class="muted">${labelForType(layer.type)} | ${labelForBlend(layer.blend)} | ${layer.opacity}%</div>
+              <div class="tiny">Position ${index + 1} / ${state.layers.length}</div>
+            </div>
+            <button class="small">Choisir</button>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", () => {
+          state.selectedLayerId = layer.id;
+          updateAll();
+        });
+
+        const actions = document.createElement("div");
+        actions.className = "mini-actions";
+
+        const up = document.createElement("button");
+        up.className = "small";
+        up.textContent = "Monter";
+        up.disabled = index === 0;
+        up.addEventListener("click", () => moveLayer(index, -1));
+
+        const down = document.createElement("button");
+        down.className = "small";
+        down.textContent = "Descendre";
+        down.disabled = index === state.layers.length - 1;
+        down.addEventListener("click", () => moveLayer(index, 1));
+
+        const copy = document.createElement("button");
+        copy.className = "small";
+        copy.textContent = "Dupliquer";
+        copy.addEventListener("click", () => duplicateLayer(index));
+
+        actions.append(up, down, copy);
+        card.append(actions);
+        layersList.append(card);
+      });
+      layerCountPill.textContent = "Calques: " + state.layers.length;
+    }
+
+    function renderInspector() {
+      const layer = getSelectedLayer();
+      const disabled = !layer;
+      [
+        layerName,
+        layerType,
+        layerBlend,
+        layerOpacity,
+        layerSpeed,
+        layerScale,
+        layerText,
+        layerSourceLabel,
+        layerSourceUrl,
+        moveUpButton,
+        moveDownButton,
+        deleteLayerButton
+      ].forEach((node) => { node.disabled = disabled; });
+
+      if (!layer) {
+        layerName.value = "";
+        layerText.value = "";
+        return;
+      }
+
+      layerName.value = layer.name;
+      layerType.value = layer.type;
+      layerBlend.value = layer.blend;
+      layerOpacity.value = layer.opacity;
+      layerSpeed.value = layer.speed;
+      layerScale.value = layer.scale;
+      layerText.value = layer.text || "";
+      layerSourceLabel.value = layer.sourceLabel || "";
+      layerSourceUrl.value = layer.sourceUrl || "";
+      layerOpacityValue.textContent = layer.opacity + "%";
+      layerSpeedValue.textContent = String(layer.speed);
+      layerScaleValue.textContent = String(layer.scale);
+
+      const index = state.layers.findIndex((entry) => entry.id === layer.id);
+      moveUpButton.disabled = index <= 0;
+      moveDownButton.disabled = index === -1 || index >= state.layers.length - 1;
+    }
+
+    function renderControls() {
+      globalPalette.value = state.palette;
+      globalSpeed.value = state.globalSpeed;
+      globalSpeedValue.textContent = String(state.globalSpeed);
+      playPauseButton.textContent = state.playing ? "Pause" : "Lecture";
+      statusPill.textContent = "Animation: " + (state.playing ? "ON" : "OFF");
+    }
+
+    function updateAll() {
+      renderVersionIdentity();
+      renderControls();
+      renderLayersList();
+      renderInspector();
+      renderResources();
+      renderVersionsList();
+      updateSourceView();
+    }
+
+    function moveLayer(index, direction) {
+      const next = index + direction;
+      if (next < 0 || next >= state.layers.length) return;
+      const current = state.layers[index];
+      state.layers[index] = state.layers[next];
+      state.layers[next] = current;
+      updateAll();
+    }
+
+    function duplicateLayer(index) {
+      const original = state.layers[index];
+      const copy = makeLayer(original.type, deepClone(original));
+      copy.id = uid();
+      copy.name = original.name + " copie";
+      if (copy.type === "stars") copy.stars = createStars(130);
+      if (copy.type === "scroll") copy.offsetX = canvas.width;
+      state.layers.splice(index + 1, 0, copy);
+      state.selectedLayerId = copy.id;
+      updateAll();
+    }
+
+    function deleteSelectedLayer() {
+      const index = state.layers.findIndex((layer) => layer.id === state.selectedLayerId);
+      if (index === -1) return;
+      state.layers.splice(index, 1);
+      state.selectedLayerId = state.layers[Math.max(0, index - 1)]?.id || null;
+      updateAll();
+    }
+
+    function addLayer(type) {
+      const layer = makeLayer(type);
+      state.layers.unshift(layer);
+      state.selectedLayerId = layer.id;
+      updateAll();
     }
 
     function drawBackground() {
@@ -890,8 +1197,8 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    function drawStarsLayer(layer, colors, frameSpeed) {
-      const speed = frameSpeed * (layer.speed / 5);
+    function drawStarsLayer(layer, colors) {
+      const speed = state.globalSpeed * (layer.speed / 5);
       for (const star of layer.stars) {
         star.x -= star.z * (0.7 + speed * 0.8);
         if (star.x < -12) {
@@ -905,21 +1212,19 @@
       ctx.globalAlpha = 1;
     }
 
-    function drawPlasmaLayer(layer, colors, frameSpeed) {
+    function drawPlasmaLayer(layer, colors) {
       const cell = Math.max(8, 28 - layer.scale * 2);
-      const speed = frameSpeed * (layer.speed / 5);
+      const speed = state.globalSpeed * (layer.speed / 5);
       for (let y = 0; y < canvas.height; y += cell) {
         for (let x = 0; x < canvas.width; x += cell) {
           const v =
             Math.sin((x + state.frame * speed * 2.1) * 0.018) +
             Math.sin((y - state.frame * speed * 1.6) * 0.024) +
             Math.sin((x + y + state.frame * speed) * 0.016);
-
           if (v < -0.7) ctx.fillStyle = colors[0];
           else if (v < 0.05) ctx.fillStyle = colors[1];
           else if (v < 0.85) ctx.fillStyle = colors[2];
           else ctx.fillStyle = colors[4];
-
           ctx.globalAlpha = safeOpacity(layer.opacity) * (0.18 + ((v + 3) / 6) * 0.52);
           ctx.fillRect(x, y, cell + 1, cell + 1);
         }
@@ -927,8 +1232,8 @@
       ctx.globalAlpha = 1;
     }
 
-    function drawRastersLayer(layer, colors, frameSpeed) {
-      const speed = frameSpeed * (layer.speed / 5);
+    function drawRastersLayer(layer, colors) {
+      const speed = state.globalSpeed * (layer.speed / 5);
       const height = 20 + layer.scale * 2;
       for (let y = 0; y < canvas.height; y += height) {
         const wave = Math.sin((y * 0.03) + state.frame * 0.03 * speed);
@@ -939,8 +1244,8 @@
       ctx.globalAlpha = 1;
     }
 
-    function drawTextLayer(layer, colors, frameSpeed) {
-      const speed = frameSpeed * (layer.speed / 5);
+    function drawTextLayer(layer, colors) {
+      const speed = state.globalSpeed * (layer.speed / 5);
       const wave = Math.sin(state.frame * 0.05 * speed) * (6 + layer.scale * 1.6);
       ctx.save();
       ctx.textAlign = "center";
@@ -956,8 +1261,8 @@
       ctx.restore();
     }
 
-    function drawScrollLayer(layer, colors, frameSpeed) {
-      const speed = frameSpeed * (layer.speed / 5);
+    function drawScrollLayer(layer, colors) {
+      const speed = state.globalSpeed * (layer.speed / 5);
       const text = " " + (layer.text || "SCROLLER").trim() + " ";
       ctx.save();
       ctx.globalAlpha = safeOpacity(layer.opacity);
@@ -977,62 +1282,86 @@
     }
 
     function drawImageLayer(layer) {
-      const image = ensureImage(layer.text.trim());
+      const image = ensureImage((layer.text || "").trim());
       if (!image || !image.complete || !image.naturalWidth) return;
-
       const scale = 0.45 + layer.scale * 0.12;
       const targetWidth = canvas.width * Math.min(1.2, scale);
       const ratio = image.naturalHeight / image.naturalWidth;
       const targetHeight = targetWidth * ratio;
       const x = (canvas.width - targetWidth) / 2;
       const y = (canvas.height - targetHeight) / 2;
-
       ctx.save();
       ctx.globalAlpha = safeOpacity(layer.opacity);
       ctx.drawImage(image, x, y, targetWidth, targetHeight);
       ctx.restore();
     }
 
-    function drawFrameChrome(colors) {
+    function drawFrameChrome() {
       ctx.save();
       ctx.strokeStyle = "rgba(255,255,255,0.12)";
       ctx.lineWidth = 3;
       ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
-      ctx.fillStyle = colors[3];
-      ctx.globalAlpha = 0.12;
-      ctx.fillRect(16, 16, canvas.width - 32, 24);
-      ctx.globalAlpha = 1;
       ctx.restore();
     }
 
     function renderCanvas() {
       const colors = palettes[state.palette];
       drawBackground();
-
       for (let i = state.layers.length - 1; i >= 0; i -= 1) {
         const layer = state.layers[i];
         ctx.save();
         ctx.globalCompositeOperation = layer.blend;
-
-        if (layer.type === "stars") drawStarsLayer(layer, colors, state.globalSpeed);
-        if (layer.type === "plasma") drawPlasmaLayer(layer, colors, state.globalSpeed);
-        if (layer.type === "rasters") drawRastersLayer(layer, colors, state.globalSpeed);
-        if (layer.type === "text") drawTextLayer(layer, colors, state.globalSpeed);
-        if (layer.type === "scroll") drawScrollLayer(layer, colors, state.globalSpeed);
+        if (layer.type === "stars") drawStarsLayer(layer, colors);
+        if (layer.type === "plasma") drawPlasmaLayer(layer, colors);
+        if (layer.type === "rasters") drawRastersLayer(layer, colors);
+        if (layer.type === "text") drawTextLayer(layer, colors);
+        if (layer.type === "scroll") drawScrollLayer(layer, colors);
         if (layer.type === "image") drawImageLayer(layer);
-
         ctx.restore();
       }
-
-      drawFrameChrome(colors);
+      drawFrameChrome();
     }
 
     function tick() {
-      if (state.playing) {
-        state.frame += 1;
-      }
+      if (state.playing) state.frame += 1;
       renderCanvas();
       requestAnimationFrame(tick);
+    }
+
+    function saveCurrentVersion() {
+      const payload = getVersionPayload();
+      payload.exportHtml = buildExportHtml(payload);
+      state.versions = state.versions.filter((version) => version.versionNumber !== payload.versionNumber);
+      state.versions.push(payload);
+      persistVersions();
+      setVersionIdentity(state.versionNumber + 1);
+      updateAll();
+    }
+
+    function loadVersion(number) {
+      const version = state.versions.find((entry) => entry.versionNumber === number);
+      if (!version) return;
+      state.palette = version.palette;
+      state.globalSpeed = version.globalSpeed;
+      setVersionIdentity(version.versionNumber);
+      state.layers = version.layers.map((layer) => {
+        const rebuilt = makeLayer(layer.type, deepClone(layer));
+        if (rebuilt.type === "stars") rebuilt.stars = createStars(130);
+        if (rebuilt.type === "scroll") rebuilt.offsetX = canvas.width;
+        return rebuilt;
+      });
+      state.selectedLayerId = state.layers[0]?.id || null;
+      updateAll();
+    }
+
+    function exportCurrentJson() {
+      const payload = getVersionPayload();
+      downloadText(`${payload.versionLabel}-${payload.demoName}.json`.replaceAll(" ", "_"), JSON.stringify(payload, null, 2), "application/json");
+    }
+
+    function exportCurrentHtml() {
+      const payload = getVersionPayload();
+      downloadText(`${payload.versionLabel}-${payload.demoName}.html`.replaceAll(" ", "_"), buildExportHtml(payload), "text/html");
     }
 
     document.querySelectorAll("[data-add-layer]").forEach((button) => {
@@ -1045,33 +1374,50 @@
 
     globalPalette.addEventListener("change", () => {
       state.palette = globalPalette.value;
-      renderEditor();
+      updateAll();
     });
 
     globalSpeed.addEventListener("input", () => {
       state.globalSpeed = Number(globalSpeed.value);
       globalSpeedValue.textContent = globalSpeed.value;
+      updateSourceView();
     });
 
     playPauseButton.addEventListener("click", () => {
       state.playing = !state.playing;
-      renderEditor();
+      renderControls();
     });
 
-    saveButton.addEventListener("click", () => {
+    savePngButton.addEventListener("click", () => {
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");
-      link.download = "cnc-demoscene-editor.png";
+      link.download = `${padVersion(state.versionNumber)}-${state.currentDemo.name}.png`.replaceAll(" ", "_");
       link.click();
     });
 
     resetButton.addEventListener("click", () => loadScene("starter"));
+    exportHtmlButton.addEventListener("click", exportCurrentHtml);
+    exportVersionJsonButton.addEventListener("click", exportCurrentJson);
+    saveVersionButton.addEventListener("click", saveCurrentVersion);
+    refreshSourceButton.addEventListener("click", updateSourceView);
+
+    copySourceButton.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(sourceView.value);
+        copySourceButton.textContent = "Code copie";
+        setTimeout(() => {
+          copySourceButton.textContent = "Copier le code";
+        }, 1500);
+      } catch {
+        copySourceButton.textContent = "Copie impossible";
+      }
+    });
 
     layerName.addEventListener("input", () => {
       const layer = getSelectedLayer();
       if (!layer) return;
       layer.name = layerName.value || "Calque";
-      renderEditor();
+      updateAll();
     });
 
     layerType.addEventListener("change", () => {
@@ -1080,24 +1426,24 @@
       const updated = makeLayer(layerType.value, {
         id: layer.id,
         name: layer.name,
+        blend: layer.blend,
         opacity: layer.opacity,
         speed: layer.speed,
         scale: layer.scale,
-        blend: layer.blend,
         text: layer.text,
         sourceLabel: layer.sourceLabel,
         sourceUrl: layer.sourceUrl
       });
       const index = state.layers.findIndex((item) => item.id === layer.id);
       state.layers[index] = updated;
-      renderEditor();
+      updateAll();
     });
 
-    layerFunction.addEventListener("change", () => {
+    layerBlend.addEventListener("change", () => {
       const layer = getSelectedLayer();
       if (!layer) return;
-      layer.blend = layerFunction.value;
-      renderEditor();
+      layer.blend = layerBlend.value;
+      updateAll();
     });
 
     layerOpacity.addEventListener("input", () => {
@@ -1105,7 +1451,7 @@
       if (!layer) return;
       layer.opacity = Number(layerOpacity.value);
       layerOpacityValue.textContent = layer.opacity + "%";
-      renderEditor();
+      updateAll();
     });
 
     layerSpeed.addEventListener("input", () => {
@@ -1113,6 +1459,7 @@
       if (!layer) return;
       layer.speed = Number(layerSpeed.value);
       layerSpeedValue.textContent = String(layer.speed);
+      updateSourceView();
     });
 
     layerScale.addEventListener("input", () => {
@@ -1120,28 +1467,29 @@
       if (!layer) return;
       layer.scale = Number(layerScale.value);
       layerScaleValue.textContent = String(layer.scale);
+      updateSourceView();
     });
 
     layerText.addEventListener("input", () => {
       const layer = getSelectedLayer();
       if (!layer) return;
-      layer.text = layerText.value.toUpperCase();
-      if (layer.type === "image") layer.text = layerText.value.trim();
-      if (layer.type === "scroll" && typeof layer.offsetX === "number") layer.offsetX = canvas.width;
+      layer.text = layer.type === "image" ? layerText.value.trim() : layerText.value.toUpperCase();
+      if (layer.type === "scroll") layer.offsetX = canvas.width;
+      updateAll();
     });
 
     layerSourceLabel.addEventListener("input", () => {
       const layer = getSelectedLayer();
       if (!layer) return;
       layer.sourceLabel = layerSourceLabel.value;
-      renderResourcesList();
+      updateAll();
     });
 
     layerSourceUrl.addEventListener("input", () => {
       const layer = getSelectedLayer();
       if (!layer) return;
       layer.sourceUrl = layerSourceUrl.value;
-      renderResourcesList();
+      updateAll();
     });
 
     moveUpButton.addEventListener("click", () => {
@@ -1156,7 +1504,15 @@
 
     deleteLayerButton.addEventListener("click", deleteSelectedLayer);
 
-    loadScene("starter");
+    loadPersistedVersions();
+    if (state.versions.length) {
+      const maxNumber = Math.max(...state.versions.map((version) => version.versionNumber));
+      setVersionIdentity(maxNumber + 1);
+    } else {
+      setVersionIdentity(1);
+    }
+    starterScene();
+    updateAll();
     tick();
   </script>
 </body>
