@@ -338,6 +338,17 @@
       </div>
 
       <div class="section">
+        <div class="section-title">Sets sauvegardables</div>
+        <label for="setNameInput">Nom du set
+          <input id="setNameInput" type="text" value="Set de depart">
+        </label>
+        <div class="grid-2">
+          <button id="saveSetButton" class="primary">Sauver set</button>
+          <button id="exportSetJsonButton">JSON set</button>
+        </div>
+      </div>
+
+      <div class="section">
         <div class="section-title">Presets rapides</div>
         <div class="grid-2">
           <button class="primary" data-scene="starter">Scene facile</button>
@@ -493,6 +504,12 @@
       </div>
 
       <div class="section">
+        <div class="section-title">Liste des sets</div>
+        <p class="muted">Un set est une scene reutilisable. Tu peux la recharger sans toucher a la numerotation des versions.</p>
+        <div id="setsList" class="versions-list"></div>
+      </div>
+
+      <div class="section">
         <div class="section-title">Sources d'inspiration</div>
         <div class="source-note">
           <p><a href="https://codef.santo.fr/" target="_blank" rel="noreferrer">CODEF</a>: esprit des demos web oldschool sur canvas.</p>
@@ -517,6 +534,7 @@
     const ctx = canvas.getContext("2d");
 
     const storageKey = "cnc_demoscene_versions";
+    const setStorageKey = "cnc_demoscene_sets";
     const sourceView = document.getElementById("sourceView");
     const layersList = document.getElementById("layersList");
     const resourcesList = document.getElementById("resourcesList");
@@ -557,6 +575,10 @@
     const moveUpButton = document.getElementById("moveUpButton");
     const moveDownButton = document.getElementById("moveDownButton");
     const deleteLayerButton = document.getElementById("deleteLayerButton");
+    const setNameInput = document.getElementById("setNameInput");
+    const saveSetButton = document.getElementById("saveSetButton");
+    const exportSetJsonButton = document.getElementById("exportSetJsonButton");
+    const setsList = document.getElementById("setsList");
 
     const palettes = {
       ocean: ["#03111b", "#0d2f67", "#1ec6ff", "#dff8ff", "#7effcb"],
@@ -586,7 +608,8 @@
       imageCache: new Map(),
       versionNumber: 1,
       currentDemo: famousDemos[0],
-      versions: []
+      versions: [],
+      sets: []
     };
 
     function uid() {
@@ -818,6 +841,16 @@
       };
     }
 
+    function getSetPayload(name) {
+      return {
+        setName: name,
+        savedAt: new Date().toISOString(),
+        palette: state.palette,
+        globalSpeed: state.globalSpeed,
+        layers: normalizedLayersForSave(state.layers)
+      };
+    }
+
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -942,11 +975,23 @@ ${getSourceCreditsBlock()}
       localStorage.setItem(storageKey, JSON.stringify(state.versions));
     }
 
+    function persistSets() {
+      localStorage.setItem(setStorageKey, JSON.stringify(state.sets));
+    }
+
     function loadPersistedVersions() {
       try {
         state.versions = JSON.parse(localStorage.getItem(storageKey) || "[]");
       } catch {
         state.versions = [];
+      }
+    }
+
+    function loadPersistedSets() {
+      try {
+        state.sets = JSON.parse(localStorage.getItem(setStorageKey) || "[]");
+      } catch {
+        state.sets = [];
       }
     }
 
@@ -1041,6 +1086,56 @@ ${getSourceCreditsBlock()}
           actions.append(loadButton, jsonButton, htmlButton);
           card.append(head, meta, link, actions);
           versionsList.append(card);
+        });
+    }
+
+    function renderSetsList() {
+      setsList.innerHTML = "";
+      if (!state.sets.length) {
+        const card = document.createElement("div");
+        card.className = "version-card";
+        card.innerHTML = "<strong>Aucun set sauve</strong><p class='muted'>Un set garde la scene actuelle pour la rejouer plus tard.</p>";
+        setsList.append(card);
+        return;
+      }
+
+      state.sets
+        .slice()
+        .sort((a, b) => a.setName.localeCompare(b.setName, "fr"))
+        .forEach((setItem) => {
+          const card = document.createElement("div");
+          card.className = "version-card";
+          card.innerHTML = `
+            <div class="row-between">
+              <strong>${setItem.setName}</strong>
+              <span class="pill">${setItem.layers.length} calques</span>
+            </div>
+            <div class="muted">${new Date(setItem.savedAt).toLocaleString("fr-FR")}</div>
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "mini-actions";
+
+          const loadButton = document.createElement("button");
+          loadButton.className = "small";
+          loadButton.textContent = "Charger";
+          loadButton.addEventListener("click", () => loadSet(setItem.setName));
+
+          const jsonButton = document.createElement("button");
+          jsonButton.className = "small";
+          jsonButton.textContent = "JSON";
+          jsonButton.addEventListener("click", () => {
+            downloadText(`${setItem.setName}.set.json`.replaceAll(" ", "_"), JSON.stringify(setItem, null, 2), "application/json");
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "small";
+          deleteButton.textContent = "Effacer";
+          deleteButton.addEventListener("click", () => deleteSet(setItem.setName));
+
+          actions.append(loadButton, jsonButton, deleteButton);
+          card.append(actions);
+          setsList.append(card);
         });
     }
 
@@ -1148,6 +1243,7 @@ ${getSourceCreditsBlock()}
       renderInspector();
       renderResources();
       renderVersionsList();
+      renderSetsList();
       updateSourceView();
     }
 
@@ -1331,10 +1427,42 @@ ${getSourceCreditsBlock()}
     function saveCurrentVersion() {
       const payload = getVersionPayload();
       payload.exportHtml = buildExportHtml(payload);
-      state.versions = state.versions.filter((version) => version.versionNumber !== payload.versionNumber);
       state.versions.push(payload);
       persistVersions();
       setVersionIdentity(state.versionNumber + 1);
+      updateAll();
+    }
+
+    function saveCurrentSet() {
+      const rawName = setNameInput.value.trim();
+      const name = rawName || `${padVersion(state.versionNumber)} Set`;
+      const payload = getSetPayload(name);
+      state.sets = state.sets.filter((entry) => entry.setName !== name);
+      state.sets.push(payload);
+      persistSets();
+      setNameInput.value = name;
+      updateAll();
+    }
+
+    function loadSet(name) {
+      const setItem = state.sets.find((entry) => entry.setName === name);
+      if (!setItem) return;
+      state.palette = setItem.palette;
+      state.globalSpeed = setItem.globalSpeed;
+      state.layers = setItem.layers.map((layer) => {
+        const rebuilt = makeLayer(layer.type, deepClone(layer));
+        if (rebuilt.type === "stars") rebuilt.stars = createStars(130);
+        if (rebuilt.type === "scroll") rebuilt.offsetX = canvas.width;
+        return rebuilt;
+      });
+      state.selectedLayerId = state.layers[0]?.id || null;
+      setNameInput.value = setItem.setName;
+      updateAll();
+    }
+
+    function deleteSet(name) {
+      state.sets = state.sets.filter((entry) => entry.setName !== name);
+      persistSets();
       updateAll();
     }
 
@@ -1343,7 +1471,6 @@ ${getSourceCreditsBlock()}
       if (!version) return;
       state.palette = version.palette;
       state.globalSpeed = version.globalSpeed;
-      setVersionIdentity(version.versionNumber);
       state.layers = version.layers.map((layer) => {
         const rebuilt = makeLayer(layer.type, deepClone(layer));
         if (rebuilt.type === "stars") rebuilt.stars = createStars(130);
@@ -1351,12 +1478,21 @@ ${getSourceCreditsBlock()}
         return rebuilt;
       });
       state.selectedLayerId = state.layers[0]?.id || null;
+      const nextNumber = Math.max(1, ...state.versions.map((entry) => entry.versionNumber)) + 1;
+      setVersionIdentity(nextNumber);
       updateAll();
     }
 
     function exportCurrentJson() {
       const payload = getVersionPayload();
       downloadText(`${payload.versionLabel}-${payload.demoName}.json`.replaceAll(" ", "_"), JSON.stringify(payload, null, 2), "application/json");
+    }
+
+    function exportCurrentSetJson() {
+      const rawName = setNameInput.value.trim();
+      const name = rawName || `${padVersion(state.versionNumber)} Set`;
+      const payload = getSetPayload(name);
+      downloadText(`${name}.set.json`.replaceAll(" ", "_"), JSON.stringify(payload, null, 2), "application/json");
     }
 
     function exportCurrentHtml() {
@@ -1399,7 +1535,9 @@ ${getSourceCreditsBlock()}
     exportHtmlButton.addEventListener("click", exportCurrentHtml);
     exportVersionJsonButton.addEventListener("click", exportCurrentJson);
     saveVersionButton.addEventListener("click", saveCurrentVersion);
+    saveSetButton.addEventListener("click", saveCurrentSet);
     refreshSourceButton.addEventListener("click", updateSourceView);
+    exportSetJsonButton.addEventListener("click", exportCurrentSetJson);
 
     copySourceButton.addEventListener("click", async () => {
       try {
@@ -1505,6 +1643,7 @@ ${getSourceCreditsBlock()}
     deleteLayerButton.addEventListener("click", deleteSelectedLayer);
 
     loadPersistedVersions();
+    loadPersistedSets();
     if (state.versions.length) {
       const maxNumber = Math.max(...state.versions.map((version) => version.versionNumber));
       setVersionIdentity(maxNumber + 1);
