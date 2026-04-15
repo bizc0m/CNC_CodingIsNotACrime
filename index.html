@@ -327,11 +327,11 @@
           <button id="exportVersionJsonButton">JSON version</button>
         </div>
         <div class="row-between">
-          <span class="pill" id="currentVersionPill">Version: V001</span>
+          <span class="pill" id="currentVersionPill">Version: V1</span>
           <span class="pill" id="demoNamePill">Demo: The Union Demo</span>
         </div>
         <div class="version-card">
-          <strong id="demoTitleLine">V001 - The Union Demo</strong>
+          <strong id="demoTitleLine">V1 - The Union Demo</strong>
           <a id="demoLinkLine" href="https://demozoo.org/" target="_blank" rel="noreferrer">Voir sur Demozoo</a>
           <span class="muted" id="demoSubtitleLine">Nom automatique de demo connue pour cette version.</span>
         </div>
@@ -378,6 +378,20 @@
             <option value="sunset">Coucher de soleil</option>
             <option value="mint">Menthe arcade</option>
             <option value="candy">Bonbon pop</option>
+            <option value="lava">Lave rouge</option>
+            <option value="ice">Glace bleue</option>
+            <option value="forest">Foret neon</option>
+            <option value="gold">Or machine</option>
+            <option value="violet">Violet flash</option>
+            <option value="peach">Peche soft</option>
+            <option value="storm">Orage synth</option>
+            <option value="acid">Acid lime</option>
+            <option value="rose">Rose chrome</option>
+            <option value="mono">Monochrome</option>
+            <option value="copper">Cuivre feu</option>
+            <option value="deepsea">Grand bleu</option>
+            <option value="aurora">Aurore</option>
+            <option value="ember">Braise</option>
           </select>
         </label>
         <label for="globalSpeed">Vitesse generale
@@ -393,7 +407,11 @@
         </div>
         <div class="grid-2">
           <button id="exportHtmlButton" class="primary">Export HTML</button>
+          <button id="exportDemoOnlyButton">Export demo seule</button>
+        </div>
+        <div class="grid-2">
           <button id="refreshSourceButton">Voir le code</button>
+          <button id="copySourceButton" class="small">Copier le code</button>
         </div>
       </div>
 
@@ -448,6 +466,31 @@
         <label for="layerSourceUrl">Lien source
           <input id="layerSourceUrl" type="url" placeholder="https://...">
         </label>
+        <div class="section-title">8 Parametres de l'effet</div>
+        <label for="param1">Parametre 1
+          <div class="range-line"><input id="param1" type="range" min="0" max="100" value="50"><span class="pill" id="param1Value">50</span></div>
+        </label>
+        <label for="param2">Parametre 2
+          <div class="range-line"><input id="param2" type="range" min="0" max="100" value="50"><span class="pill" id="param2Value">50</span></div>
+        </label>
+        <label for="param3">Parametre 3
+          <div class="range-line"><input id="param3" type="range" min="0" max="100" value="50"><span class="pill" id="param3Value">50</span></div>
+        </label>
+        <label for="param4">Parametre 4
+          <div class="range-line"><input id="param4" type="range" min="0" max="100" value="50"><span class="pill" id="param4Value">50</span></div>
+        </label>
+        <label for="param5">Parametre 5
+          <div class="range-line"><input id="param5" type="range" min="0" max="100" value="50"><span class="pill" id="param5Value">50</span></div>
+        </label>
+        <label for="param6">Parametre 6
+          <div class="range-line"><input id="param6" type="range" min="0" max="100" value="50"><span class="pill" id="param6Value">50</span></div>
+        </label>
+        <label for="param7">Parametre 7
+          <div class="range-line"><input id="param7" type="range" min="0" max="100" value="50"><span class="pill" id="param7Value">50</span></div>
+        </label>
+        <label for="param8">Parametre 8
+          <div class="range-line"><input id="param8" type="range" min="0" max="100" value="50"><span class="pill" id="param8Value">50</span></div>
+        </label>
         <div class="grid-3">
           <button id="moveUpButton">Monter</button>
           <button id="moveDownButton">Descendre</button>
@@ -471,7 +514,7 @@
       <div class="canvas-shell">
         <canvas id="demoCanvas" width="960" height="600"></canvas>
         <div class="canvas-caption">
-          <span id="canvasVersionCaption">V001 - The Union Demo</span>
+          <span id="canvasVersionCaption">V1 - The Union Demo</span>
           <span>HTML Canvas demo editor</span>
         </div>
       </div>
@@ -484,7 +527,7 @@
       <div class="section">
         <div class="row-between">
           <div class="section-title">Code source modifiable</div>
-          <button id="copySourceButton" class="small">Copier le code</button>
+          <span class="pill">Source live</span>
         </div>
         <textarea id="sourceView" class="source-box" spellcheck="false"></textarea>
       </div>
@@ -555,6 +598,7 @@
     const savePngButton = document.getElementById("savePngButton");
     const resetButton = document.getElementById("resetButton");
     const exportHtmlButton = document.getElementById("exportHtmlButton");
+    const exportDemoOnlyButton = document.getElementById("exportDemoOnlyButton");
     const exportVersionJsonButton = document.getElementById("exportVersionJsonButton");
     const saveVersionButton = document.getElementById("saveVersionButton");
     const refreshSourceButton = document.getElementById("refreshSourceButton");
@@ -579,12 +623,28 @@
     const saveSetButton = document.getElementById("saveSetButton");
     const exportSetJsonButton = document.getElementById("exportSetJsonButton");
     const setsList = document.getElementById("setsList");
+    const paramInputs = Array.from({ length: 8 }, (_, index) => document.getElementById(`param${index + 1}`));
+    const paramValueSpans = Array.from({ length: 8 }, (_, index) => document.getElementById(`param${index + 1}Value`));
 
     const palettes = {
       ocean: ["#03111b", "#0d2f67", "#1ec6ff", "#dff8ff", "#7effcb"],
       sunset: ["#17061e", "#631150", "#ff666d", "#ffc95c", "#fff2bf"],
       mint: ["#03150f", "#0c615a", "#4dffcf", "#d7fff4", "#8ddcff"],
       candy: ["#180733", "#7030ff", "#ff54aa", "#ffd166", "#fff5e3"]
+      ,lava: ["#180403", "#6a1208", "#ff5b2e", "#ffb347", "#fff0cf"]
+      ,ice: ["#04131a", "#0a4f7a", "#6fdcff", "#dff7ff", "#ffffff"]
+      ,forest: ["#041109", "#0f5f2f", "#39d98a", "#bdf7cb", "#effff2"]
+      ,gold: ["#140f04", "#6f4c05", "#d8a63c", "#ffe08a", "#fff8dc"]
+      ,violet: ["#150626", "#4c1d95", "#9f67ff", "#d9b8ff", "#fff0ff"]
+      ,peach: ["#2a0d0d", "#a64b4b", "#ff9e7a", "#ffd1b3", "#fff4eb"]
+      ,storm: ["#060b14", "#23395d", "#547aa5", "#9ec1d9", "#f0f7ff"]
+      ,acid: ["#101704", "#4f7b00", "#b5ff00", "#edff89", "#fbffe8"]
+      ,rose: ["#220712", "#8f2d56", "#ff5c8a", "#ffc1d6", "#fff1f7"]
+      ,mono: ["#050505", "#3a3a3a", "#7a7a7a", "#cfcfcf", "#ffffff"]
+      ,copper: ["#160b07", "#6b3e26", "#b87333", "#e7b587", "#fff1e5"]
+      ,deepsea: ["#021018", "#003049", "#0077b6", "#90e0ef", "#caf0f8"]
+      ,aurora: ["#06111d", "#184e77", "#34a0a4", "#76c893", "#d9ed92"]
+      ,ember: ["#160606", "#7f1d1d", "#dc2626", "#fb923c", "#ffedd5"]
     };
 
     const famousDemos = [
@@ -617,7 +677,8 @@
     }
 
     function padVersion(number) {
-      return "V" + String(number).padStart(3, "0");
+      if (number <= 1) return "V1";
+      return "V1." + String(number - 1);
     }
 
     function deepClone(data) {
@@ -644,7 +705,8 @@
         scale: layer.scale,
         text: layer.text || "",
         sourceLabel: layer.sourceLabel || "",
-        sourceUrl: layer.sourceUrl || ""
+        sourceUrl: layer.sourceUrl || "",
+        params: deepClone(layer.params || [50, 50, 50, 50, 50, 50, 50, 50])
       }));
     }
 
@@ -660,7 +722,8 @@
           text: "",
           sourceLabel: "CODEF",
           sourceUrl: "https://codef.santo.fr/",
-          stars: createStars(130)
+          stars: createStars(130),
+          params: [50, 60, 45, 55, 40, 50, 50, 50]
         },
         plasma: {
           name: "Plasma",
@@ -671,7 +734,8 @@
           scale: 5,
           text: "",
           sourceLabel: "Democyclopedie - liste des effets",
-          sourceUrl: "https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/"
+          sourceUrl: "https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/",
+          params: [55, 65, 60, 50, 55, 45, 50, 40]
         },
         rasters: {
           name: "Barres",
@@ -682,7 +746,8 @@
           scale: 5,
           text: "",
           sourceLabel: "Namwollem / CODEF basics",
-          sourceUrl: "https://namwollem.blogspot.com/p/codef-basics.html"
+          sourceUrl: "https://namwollem.blogspot.com/p/codef-basics.html",
+          params: [52, 50, 48, 50, 55, 50, 50, 45]
         },
         text: {
           name: "Titre",
@@ -693,7 +758,8 @@
           scale: 5,
           text: "BONJOUR DEMOSCENE",
           sourceLabel: "",
-          sourceUrl: ""
+          sourceUrl: "",
+          params: [50, 50, 50, 50, 50, 50, 50, 50]
         },
         scroll: {
           name: "Scroller",
@@ -705,7 +771,8 @@
           text: "SALUT LES AMIS - TESTE LES CALQUES - MONTE LES BARRES - CHANGE LA TRANSPARENCE -",
           sourceLabel: "Democyclopedie - liste des effets",
           sourceUrl: "https://democyclopedie.wordpress.com/2015/04/01/liste-des-effets/",
-          offsetX: canvas.width
+          offsetX: canvas.width,
+          params: [50, 50, 60, 45, 55, 50, 50, 50]
         },
         image: {
           name: "Image URL",
@@ -716,7 +783,8 @@
           scale: 5,
           text: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
           sourceLabel: "Image de demonstration externe",
-          sourceUrl: "https://images.unsplash.com/"
+          sourceUrl: "https://images.unsplash.com/",
+          params: [50, 50, 50, 50, 50, 50, 50, 50]
         }
       };
 
@@ -851,6 +919,12 @@
       };
     }
 
+    function buildDemoOnlyHtml(payload) {
+      return buildExportHtml(payload)
+        .replace('<section class="card">\\n      <h2>Ressources et inspirations</h2>', '<section class="card" style="display:none">\\n      <h2>Ressources et inspirations</h2>')
+        .replace('<section class="card">\\n      <p><a href="https://www.demoparty.net/"', '<section class="card" style="display:none">\\n      <p><a href="https://www.demoparty.net/"');
+    }
+
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -934,7 +1008,21 @@ ${getSourceCreditsBlock()}
       ocean: ["#03111b", "#0d2f67", "#1ec6ff", "#dff8ff", "#7effcb"],
       sunset: ["#17061e", "#631150", "#ff666d", "#ffc95c", "#fff2bf"],
       mint: ["#03150f", "#0c615a", "#4dffcf", "#d7fff4", "#8ddcff"],
-      candy: ["#180733", "#7030ff", "#ff54aa", "#ffd166", "#fff5e3"]
+      candy: ["#180733", "#7030ff", "#ff54aa", "#ffd166", "#fff5e3"],
+      lava: ["#180403", "#6a1208", "#ff5b2e", "#ffb347", "#fff0cf"],
+      ice: ["#04131a", "#0a4f7a", "#6fdcff", "#dff7ff", "#ffffff"],
+      forest: ["#041109", "#0f5f2f", "#39d98a", "#bdf7cb", "#effff2"],
+      gold: ["#140f04", "#6f4c05", "#d8a63c", "#ffe08a", "#fff8dc"],
+      violet: ["#150626", "#4c1d95", "#9f67ff", "#d9b8ff", "#fff0ff"],
+      peach: ["#2a0d0d", "#a64b4b", "#ff9e7a", "#ffd1b3", "#fff4eb"],
+      storm: ["#060b14", "#23395d", "#547aa5", "#9ec1d9", "#f0f7ff"],
+      acid: ["#101704", "#4f7b00", "#b5ff00", "#edff89", "#fbffe8"],
+      rose: ["#220712", "#8f2d56", "#ff5c8a", "#ffc1d6", "#fff1f7"],
+      mono: ["#050505", "#3a3a3a", "#7a7a7a", "#cfcfcf", "#ffffff"],
+      copper: ["#160b07", "#6b3e26", "#b87333", "#e7b587", "#fff1e5"],
+      deepsea: ["#021018", "#003049", "#0077b6", "#90e0ef", "#caf0f8"],
+      aurora: ["#06111d", "#184e77", "#34a0a4", "#76c893", "#d9ed92"],
+      ember: ["#160606", "#7f1d1d", "#dc2626", "#fb923c", "#ffedd5"]
     };
     const colors = palettes[payload.palette] || palettes.ocean;
     const state = {frame:0, imageCache:new Map()};
@@ -1202,7 +1290,7 @@ ${getSourceCreditsBlock()}
         moveUpButton,
         moveDownButton,
         deleteLayerButton
-      ].forEach((node) => { node.disabled = disabled; });
+      ].concat(paramInputs).forEach((node) => { node.disabled = disabled; });
 
       if (!layer) {
         layerName.value = "";
@@ -1222,6 +1310,11 @@ ${getSourceCreditsBlock()}
       layerOpacityValue.textContent = layer.opacity + "%";
       layerSpeedValue.textContent = String(layer.speed);
       layerScaleValue.textContent = String(layer.scale);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
+      paramInputs.forEach((input, index) => {
+        input.value = params[index];
+        paramValueSpans[index].textContent = String(params[index]);
+      });
 
       const index = state.layers.findIndex((entry) => entry.id === layer.id);
       moveUpButton.disabled = index <= 0;
@@ -1295,15 +1388,18 @@ ${getSourceCreditsBlock()}
 
     function drawStarsLayer(layer, colors) {
       const speed = state.globalSpeed * (layer.speed / 5);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
+      const drift = 0.5 + params[0] / 50;
       for (const star of layer.stars) {
-        star.x -= star.z * (0.7 + speed * 0.8);
+        star.x -= star.z * (0.4 + speed * 0.5) * drift;
+        star.y += Math.sin((state.frame + star.x) * 0.01) * ((params[1] - 50) / 250);
         if (star.x < -12) {
           star.x = canvas.width + Math.random() * 90;
           star.y = Math.random() * canvas.height;
         }
         ctx.fillStyle = colors[3];
-        ctx.globalAlpha = safeOpacity(layer.opacity) * Math.min(1, 0.35 + star.z * 0.55);
-        ctx.fillRect(star.x, star.y, star.size + layer.scale * 0.08, star.size + layer.scale * 0.08);
+        ctx.globalAlpha = safeOpacity(layer.opacity) * Math.min(1, 0.2 + star.z * (0.3 + params[2] / 100));
+        ctx.fillRect(star.x, star.y, star.size + layer.scale * 0.08 + params[3] / 40, star.size + layer.scale * 0.08 + params[3] / 40);
       }
       ctx.globalAlpha = 1;
     }
@@ -1311,17 +1407,18 @@ ${getSourceCreditsBlock()}
     function drawPlasmaLayer(layer, colors) {
       const cell = Math.max(8, 28 - layer.scale * 2);
       const speed = state.globalSpeed * (layer.speed / 5);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
       for (let y = 0; y < canvas.height; y += cell) {
         for (let x = 0; x < canvas.width; x += cell) {
           const v =
-            Math.sin((x + state.frame * speed * 2.1) * 0.018) +
-            Math.sin((y - state.frame * speed * 1.6) * 0.024) +
-            Math.sin((x + y + state.frame * speed) * 0.016);
+            Math.sin((x + state.frame * speed * (1 + params[0] / 80)) * (0.01 + params[1] / 5000)) +
+            Math.sin((y - state.frame * speed * (1 + params[2] / 80)) * (0.012 + params[3] / 5000)) +
+            Math.sin((x + y + state.frame * speed) * (0.01 + params[4] / 5000));
           if (v < -0.7) ctx.fillStyle = colors[0];
           else if (v < 0.05) ctx.fillStyle = colors[1];
           else if (v < 0.85) ctx.fillStyle = colors[2];
           else ctx.fillStyle = colors[4];
-          ctx.globalAlpha = safeOpacity(layer.opacity) * (0.18 + ((v + 3) / 6) * 0.52);
+          ctx.globalAlpha = safeOpacity(layer.opacity) * (0.08 + ((v + 3) / 6) * (0.25 + params[5] / 150));
           ctx.fillRect(x, y, cell + 1, cell + 1);
         }
       }
@@ -1330,49 +1427,52 @@ ${getSourceCreditsBlock()}
 
     function drawRastersLayer(layer, colors) {
       const speed = state.globalSpeed * (layer.speed / 5);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
       const height = 20 + layer.scale * 2;
       for (let y = 0; y < canvas.height; y += height) {
-        const wave = Math.sin((y * 0.03) + state.frame * 0.03 * speed);
+        const wave = Math.sin((y * (0.01 + params[0] / 2500)) + state.frame * (0.01 + params[1] / 2500) * speed);
         ctx.fillStyle = wave > 0 ? colors[2] : colors[4];
-        ctx.globalAlpha = safeOpacity(layer.opacity) * (0.25 + ((wave + 1) * 0.14));
-        ctx.fillRect(0, y + Math.sin(state.frame * 0.04 + y * 0.03) * 9, canvas.width, height - 3);
+        ctx.globalAlpha = safeOpacity(layer.opacity) * (0.1 + ((wave + 1) * (0.08 + params[2] / 500)));
+        ctx.fillRect(0, y + Math.sin(state.frame * 0.04 + y * (0.01 + params[3] / 2500)) * (3 + params[4] / 8), canvas.width, height - 3);
       }
       ctx.globalAlpha = 1;
     }
 
     function drawTextLayer(layer, colors) {
       const speed = state.globalSpeed * (layer.speed / 5);
-      const wave = Math.sin(state.frame * 0.05 * speed) * (6 + layer.scale * 1.6);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
+      const wave = Math.sin(state.frame * (0.02 + params[0] / 1500) * speed) * (3 + layer.scale + params[1] / 6);
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.globalAlpha = safeOpacity(layer.opacity);
-      ctx.font = `900 ${64 + layer.scale * 6}px Trebuchet MS`;
+      ctx.font = `900 ${42 + layer.scale * 6 + params[2] / 3}px Trebuchet MS`;
       ctx.fillStyle = "rgba(0,0,0,0.38)";
       ctx.fillText(layer.text || "TEXTE", canvas.width / 2 + 5, canvas.height / 2 + 6 + wave);
       ctx.fillStyle = colors[4];
       ctx.shadowColor = colors[2];
-      ctx.shadowBlur = 24;
+      ctx.shadowBlur = 8 + params[3] / 2;
       ctx.fillText(layer.text || "TEXTE", canvas.width / 2, canvas.height / 2 + wave);
       ctx.restore();
     }
 
     function drawScrollLayer(layer, colors) {
       const speed = state.globalSpeed * (layer.speed / 5);
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
       const text = " " + (layer.text || "SCROLLER").trim() + " ";
       ctx.save();
       ctx.globalAlpha = safeOpacity(layer.opacity);
-      ctx.font = `900 ${24 + layer.scale * 1.8}px Verdana`;
+      ctx.font = `900 ${20 + layer.scale * 1.8 + params[0] / 5}px Verdana`;
       ctx.textBaseline = "middle";
-      const y = canvas.height - 58 + Math.sin(state.frame * 0.05 * speed) * 8;
+      const y = canvas.height - (40 + params[1] / 2) + Math.sin(state.frame * 0.05 * speed) * (2 + params[2] / 10);
       ctx.fillStyle = "rgba(0,0,0,0.42)";
       ctx.fillRect(0, canvas.height - 96, canvas.width, 74);
       ctx.fillStyle = colors[2];
       ctx.shadowColor = colors[4];
-      ctx.shadowBlur = 20;
+      ctx.shadowBlur = 6 + params[3] / 3;
       ctx.fillText(text, layer.offsetX, y);
       const width = ctx.measureText(text).width;
-      layer.offsetX -= 2 + speed;
+      layer.offsetX -= 1 + speed + params[4] / 30;
       if (layer.offsetX < -width - 12) layer.offsetX = canvas.width + 10;
       ctx.restore();
     }
@@ -1380,12 +1480,13 @@ ${getSourceCreditsBlock()}
     function drawImageLayer(layer) {
       const image = ensureImage((layer.text || "").trim());
       if (!image || !image.complete || !image.naturalWidth) return;
-      const scale = 0.45 + layer.scale * 0.12;
+      const params = layer.params || [50, 50, 50, 50, 50, 50, 50, 50];
+      const scale = 0.3 + layer.scale * 0.08 + params[0] / 250;
       const targetWidth = canvas.width * Math.min(1.2, scale);
       const ratio = image.naturalHeight / image.naturalWidth;
       const targetHeight = targetWidth * ratio;
-      const x = (canvas.width - targetWidth) / 2;
-      const y = (canvas.height - targetHeight) / 2;
+      const x = (canvas.width - targetWidth) / 2 + (params[1] - 50) * 4;
+      const y = (canvas.height - targetHeight) / 2 + (params[2] - 50) * 3;
       ctx.save();
       ctx.globalAlpha = safeOpacity(layer.opacity);
       ctx.drawImage(image, x, y, targetWidth, targetHeight);
@@ -1500,6 +1601,11 @@ ${getSourceCreditsBlock()}
       downloadText(`${payload.versionLabel}-${payload.demoName}.html`.replaceAll(" ", "_"), buildExportHtml(payload), "text/html");
     }
 
+    function exportCurrentDemoOnlyHtml() {
+      const payload = getVersionPayload();
+      downloadText(`${payload.versionLabel}-${payload.demoName}-demo-only.html`.replaceAll(" ", "_"), buildDemoOnlyHtml(payload), "text/html");
+    }
+
     document.querySelectorAll("[data-add-layer]").forEach((button) => {
       button.addEventListener("click", () => addLayer(button.dataset.addLayer));
     });
@@ -1533,6 +1639,7 @@ ${getSourceCreditsBlock()}
 
     resetButton.addEventListener("click", () => loadScene("starter"));
     exportHtmlButton.addEventListener("click", exportCurrentHtml);
+    exportDemoOnlyButton.addEventListener("click", exportCurrentDemoOnlyHtml);
     exportVersionJsonButton.addEventListener("click", exportCurrentJson);
     saveVersionButton.addEventListener("click", saveCurrentVersion);
     saveSetButton.addEventListener("click", saveCurrentSet);
@@ -1628,6 +1735,17 @@ ${getSourceCreditsBlock()}
       if (!layer) return;
       layer.sourceUrl = layerSourceUrl.value;
       updateAll();
+    });
+
+    paramInputs.forEach((input, index) => {
+      input.addEventListener("input", () => {
+        const layer = getSelectedLayer();
+        if (!layer) return;
+        if (!layer.params) layer.params = [50, 50, 50, 50, 50, 50, 50, 50];
+        layer.params[index] = Number(input.value);
+        paramValueSpans[index].textContent = input.value;
+        updateSourceView();
+      });
     });
 
     moveUpButton.addEventListener("click", () => {
