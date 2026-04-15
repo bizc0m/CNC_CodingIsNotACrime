@@ -952,7 +952,7 @@ ${getSourceCreditsBlock()}
     function render(){ background(); for(let i=payload.layers.length - 1; i>=0; i--){ const layer = payload.layers[i]; ctx.save(); ctx.globalCompositeOperation = layer.blend; if(layer.type==="stars") stars(layer); if(layer.type==="plasma") plasma(layer); if(layer.type==="rasters") rasters(layer); if(layer.type==="text") text(layer); if(layer.type==="scroll") scroll(layer); if(layer.type==="image") image(layer); ctx.restore(); } frameChrome(); }
     function tick(){ state.frame += 1; render(); requestAnimationFrame(tick); }
     tick();
-  </script>
+  <\/script>
 </body>
 </html>`;
     }
