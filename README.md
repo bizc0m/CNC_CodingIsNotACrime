@@ -40,3 +40,12 @@ Editeur demoscene HTML simple avec gestion des calques, des versions numerotees 
 ## Limite actuelle
 
 L'application sait sauvegarder les versions en local dans le navigateur et exporter les fichiers. En revanche, l'upload automatique vers GitHub ne peut pas etre garanti tant qu'une authentification GitHub valide n'est pas configuree sur la machine ou dans un workflow dedie.
+
+## Push automatique GitHub
+
+Le depot contient un script `auto_push.sh` prevu pour pousser automatiquement la branche courante vers `origin`.
+
+Un hook Git `post-commit` peut appeler ce script pour envoyer chaque nouveau commit sans question supplementaire, a condition que:
+
+- un remote `origin` GitHub existe
+- l'authentification GitHub soit deja valide sur la machine
